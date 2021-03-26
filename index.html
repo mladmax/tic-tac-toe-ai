@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;500&display=swap" rel="stylesheet">
+
+  <title>Tic-Tac-Toe AI</title>
+  <meta name="description" content="Simple tic-tac-toe game with AI opponent">
+  <meta name="author" content="Mladen Maksimovic">
+
+	<style>
+		body {
+			background-color: #fffbe6;
+			font-family: Roboto, sans-serif;
+		}
+		
+		#game {
+			margin-top: 100px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#canvas {
+			cursor: pointer;
+		}
+
+		#message {
+			height: 10px;
+			margin-top: 60px;
+			font-size: 28px;
+			font-weight: 500;
+			caret-color: transparent;
+		}
+
+		#retry {
+			margin-top: 30px;
+			font-size: 18px;
+			font-weight: 500;
+			text-decoration: underline;
+			cursor: pointer;
+			display: none;
+		}
+	</style>
+</head>
+
+<body onload=startGame()>
+	<div id="game">
+		<canvas id="canvas" width="600" height="600"></canvas> 
+		<span id="message"></span>
+		<span id="retry" onclick=restartGame()>Try again</span>
+	</div>
+
+  <script src="./index.js"></script>
+</body>
+</html>
