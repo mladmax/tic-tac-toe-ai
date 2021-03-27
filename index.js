@@ -91,41 +91,79 @@ function drawO(x, y) {
 	ctx.stroke();
 }
 
+function drawVerticalLine(x) {
+	ctx.beginPath();
+	ctx.moveTo(size / 2 + x * size, 0);
+	ctx.lineTo(size / 2 + x * size, canvas.height);
+	ctx.stroke();
+}
+
+function drawHorizontalLine(y) {
+	ctx.beginPath();
+	ctx.moveTo(0, size / 2 + y * size);
+	ctx.lineTo(canvas.width, size / 2 + y * size);
+	ctx.stroke();
+}
+
+function drawDiagonalLine(x) {
+	ctx.beginPath();
+	ctx.moveTo(x === 0 ? 0 : canvas.width, 0);
+	ctx.lineTo(x === 0 ? canvas.width : 0, canvas.height);
+	ctx.stroke();
+}
+
 function check3(a, b, c) {
 	return !!a && a === b && b === c;
 }
 
-function checkWinner(board) {
-	// horizontal
+function checkWinner(aiCheck = false) {
+	// horizontal	
 	for (let i = 0; i < 3; i++) {
-		if (check3(board[i][0], board[i][1], board[i][2])) {
-			return board[i][0];
+		if (check3(board[0][i], board[1][i], board[2][i])) {
+			if (!aiCheck) {
+				drawHorizontalLine(i);
+			}
+
+			return board[0][i];
 		}
 	}
 
 	// vertical
 	for (let i = 0; i < 3; i++) {
-		if (check3(board[0][i], board[1][i], board[2][i])) {
-			return board[0][i];
+		if (check3(board[i][0], board[i][1], board[i][2])) {
+			if (!aiCheck) {
+				drawVerticalLine(i);
+			}
+
+			return board[i][0];
 		}
 	}
 
 	// diagonal
 	if (check3(board[0][0], board[1][1], board[2][2])) {
+		if (!aiCheck) {
+			drawDiagonalLine(0);
+		}
+
 		return board[0][0];
 	}
+
 	if (check3(board[2][0], board[1][1], board[0][2])) {
+		if (!aiCheck) {
+			drawDiagonalLine(2);
+		}
+
 		return board[2][0];
 	}
 
 	// tie
-	if (!getAvailableMoves(board).length) {
+	if (!getAvailableMoves().length) {
 		return 'tie';
 	}
 }
 
 function checkBoard() {
-	const winner = checkWinner(board);
+	const winner = checkWinner();
 
 	if (winner) {
 		message.innerHTML = END_MESSAGES[winner];
@@ -133,7 +171,7 @@ function checkBoard() {
 	}
 }
 
-function getAvailableMoves(board) {
+function getAvailableMoves() {
 	const available = [];
 
 	for (let x = 0; x < 3; x++) {
@@ -151,7 +189,7 @@ function computerMove() {
 	let pos;
 	let bestScore = -Infinity;
 
-	getAvailableMoves(board).forEach(({ x, y }) => {
+	getAvailableMoves().forEach(({ x, y }) => {
 		board[x][y] = PLAYERS.computer;
 		const score = minimax(board, 0, false);
 		board[x][y] = '';
@@ -171,7 +209,7 @@ function computerMove() {
  */
 function minimax(board, depth, isMax) {
 	// if the game ended return the score
-	const winner = checkWinner(board);
+	const winner = checkWinner(true);
 	if (winner) {
 		return SCORES[winner] - depth;
 	}
@@ -179,7 +217,7 @@ function minimax(board, depth, isMax) {
 	let bestScore = isMax ? -Infinity : Infinity;
 
 	// try out all the available moves
-	getAvailableMoves(board).forEach(({ x, y }) => {
+	getAvailableMoves().forEach(({ x, y }) => {
 		// computer is the maximizing player
 		board[x][y] = isMax ? PLAYERS.computer : PLAYERS.human;
 		const score = minimax(board, depth + 1, !isMax);
@@ -205,7 +243,9 @@ function humanMove(event) {
 			canvas.removeEventListener('click', humanMove);
 			setTimeout(() => {
 				computerMove();
-				canvas.addEventListener('click', humanMove);
+				if (gameRunning) {
+					canvas.addEventListener('click', humanMove);
+				}
 			}, 500);
 		}
 	}
